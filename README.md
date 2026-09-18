@@ -350,11 +350,123 @@ Simple example:
 User created → post_save signal → Profile created
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Django Settings
+“settings.py contains the configuration of a Django project.”
+
+It includes things like:
+- Database configuration
+- Installed apps
+- Middleware
+- Templates
+- Authentication
+- Static and media files
+- Security settings
+Interview answer:
+“Django settings define how the application behaves and connects to external resources like databases. In production, sensitive values such as passwords and secret keys should be stored securely, usually through environment variables or a secret manager.”
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Environment Configuration
+“Environment configuration means keeping environment-specific settings separate from the application code.”
+
+For example:
+- Database URL
+- API keys
+- Secret keys
+- Debug mode
+- External service credentials
+Typically, we use environment variables:
+import os
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
+Interview answer:
+“I keep configuration and secrets outside the source code using environment variables. This allows the same codebase to work across development, testing, and production with different configurations.”
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Database Transactions in Django
+“A database transaction is a group of database operations that are treated as one unit of work. Either all operations succeed, or all are rolled back if something fails.”
+
+In Django:
+from django.db import transaction
+
+with transaction.atomic():
+    account.withdraw(100)
+    account.save()
+    transaction_log.save()
+
+If an error occurs inside the block, Django rolls back the changes.
+Interview answer:
+“I use transaction.atomic() when multiple database operations must succeed together. It maintains data consistency by committing everything on success and rolling back on failure.”
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+How does Django Authentication work?
+“Django authentication verifies the user's identity, usually using a username/email and password, and manages the user's session after successful login.”
+
+Basic flow:
+Login Request → Validate Credentials → Create Session → Session Cookie → User Authenticated
+Django provides built-in authentication features like:
+- User model
+- Password hashing
+- authenticate()
+- login() / logout()
+- Sessions
+- Authentication middleware
+Interview answer:
+“When a user logs in, Django verifies the credentials using its authentication system. If valid, Django creates a session and sends a session cookie to the client. On subsequent requests, Django uses that session to identify the user.”
+
+For DRF APIs: JWT or token-based authentication can be used instead of Django's session-based authentication.
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Django Migrations
+Interview answer:
+“Django migrations are used to track changes in our models and apply those changes to the database schema. When we modify a model, we create a migration file using makemigrations, and then apply it to the database using migrate.”
+
+Example
+If I add a field:
+class User(models.Model):
+    name = models.CharField(max_length=100)
+    age = models.IntegerField()
+
+Then:
+python manage.py makemigrations
+python manage.py migrate
+- makemigrations → creates migration files describing the model changes.
+- migrate → applies those changes to the database.
+Simple flow
+Model change → makemigrations → Migration file → migrate → Database updated
+You can also mention:
+“Migration files are usually committed to Git, so the same database schema changes can be applied consistently across development, testing, and production.”
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Middleware
+Interview answer:
+“Middleware is a layer between the client request and the Django view. It can process the request before it reaches the view and also process the response before it goes back to the client.”
+
+Flow:
+Client → Middleware → View → Middleware → Response → Client
+Common uses:
+- Authentication
+- Logging
+- Security
+- CORS
+- Request/response processing
+Example:
+class LoggingMiddleware:
+    def __call__(self, request):
+        print(request.path)
+        response = self.get_response(request)
+        return response
+
+Simple interview line:
+“Middleware is useful when I need to apply common logic to many or all requests instead of repeating it inside individual views.”
+
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
